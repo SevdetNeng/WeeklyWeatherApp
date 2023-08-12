@@ -46,7 +46,7 @@ fun SplashScreen(navController: NavController){
             )
         )
         delay(2000)
-        navController.navigate(Screens.MainScreen.name)
+        navController.navigate(Screens.MainScreen.name+"/istanbul")
     } )
 
     Surface(shape = CircleShape,

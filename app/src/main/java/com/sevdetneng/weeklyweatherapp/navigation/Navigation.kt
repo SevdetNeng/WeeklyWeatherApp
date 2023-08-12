@@ -14,8 +14,10 @@ fun Navigation() {
         composable(Screens.SplashScreen.name){
             SplashScreen(navController)
         }
-        composable(Screens.MainScreen.name){
-            MainScreen(navController = navController)
+        composable(Screens.MainScreen.name + "/{city}"){ navBackStack ->
+            navBackStack.arguments?.getString("city").let { city->
+                MainScreen(navController = navController,city = city!!)
+            }
         }
 
     }
