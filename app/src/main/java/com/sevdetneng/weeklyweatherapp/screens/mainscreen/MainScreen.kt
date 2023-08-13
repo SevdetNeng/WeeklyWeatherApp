@@ -2,19 +2,23 @@ package com.sevdetneng.weeklyweatherapp.screens.mainscreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -32,33 +36,74 @@ import com.sevdetneng.weeklyweatherapp.util.formatDecimals
 @Composable
 fun MainScreen(navController: NavController,city : String){
     val mainViewModel : MainViewModel = hiltViewModel()
-    mainViewModel.getWeather(city,"metric")
+    val unitType = mainViewModel.unitType
+    mainViewModel.getWeather(city,unitType.value)
     val weatherData = mainViewModel.data.value.data
+    val dayIndex = mainViewModel.dayIndex
+
 
     if(weatherData!=null){
-        Scaffold(topBar = { WeatherTopBar(title = "Main Screen", isMain = true) }) {
+        Scaffold(topBar = { WeatherTopBar(title = weatherData.city.name, country = weatherData.city.country,
+            isMain = true, navController = navController) }) {
             Column(modifier = Modifier.fillMaxSize()){
-                TodayInfo(weather = weatherData)
+                TodayInfo(weather = weatherData,dayIndex,unitType)
                 Divider(modifier = Modifier.padding(horizontal = 12.dp))
-                ThisWeekLazyColumn(weather = weatherData)
+                ThisWeekLazyColumn(weather = weatherData,dayIndex)
             }
-
+        }
+    }else{
+        Scaffold(topBar = { WeatherTopBar(title = "City", country = "Country",
+            isMain = false, navController = navController){
+            navController.popBackStack()
+        } }) {
+            Column(modifier = Modifier.fillMaxSize()){
+                Text("City Not Found")
+            }
         }
     }
 
 }
 
 @Composable
-fun TodayInfo(weather : Weather){
+fun TodayInfo(weather : Weather,dayIndex : MutableState<Int>,unitState : MutableState<String>){
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){  Text(formatDate(weather.list[0].dt),
-    modifier = Modifier.padding(bottom = 4.dp),
-    style = MaterialTheme.typography.caption,
-    fontWeight = FontWeight.Bold)
+    ){
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Box(modifier = Modifier.weight(1f)){
+
+            }
+            Text(formatDate(weather.list[dayIndex.value].dt),
+                modifier = Modifier
+                    .padding(bottom = 4.dp)
+                    .weight(1f),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center)
+            Row(horizontalArrangement = Arrangement.End,
+            modifier = Modifier.weight(1f)){
+                Surface(shape = RoundedCornerShape(4.dp),
+                color = Color.Magenta.copy(alpha = 0.4f),
+                modifier = Modifier.clickable {
+                    if(unitState.value=="imperial"){
+                        unitState.value="metric"
+                    }else{
+                        unitState.value="imperial"
+                    }
+                }) {
+                    Text(text = if(unitState.value=="imperial") "F°" else "C°",
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                }
+            }
+
+        }
+
         Surface(shape = CircleShape,
             modifier = Modifier.size(200.dp),
             border = BorderStroke(1.dp, Color.Black),
@@ -68,21 +113,21 @@ fun TodayInfo(weather : Weather){
             Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()){
-                ImageLoader(imageId = weather.list[0].weather[0].icon,
+                ImageLoader(imageId = weather.list[dayIndex.value].weather[0].icon,
                 modifier = Modifier.size(80.dp))
-                Text(formatDecimals(weather.list[0].temp.day)+"°",
+                Text(formatDecimals(weather.list[dayIndex.value].temp.day)+"°",
                 style = MaterialTheme.typography.h4)
-                Text(weather.list[0].weather[0].main,
+                Text(weather.list[dayIndex.value].weather[0].main,
                 style = MaterialTheme.typography.h5,
                 fontStyle = FontStyle.Italic)
             }
         }
-        SunriseSunsetRow(weather = weather)
+        SunriseSunsetRow(weather = weather,dayIndex)
     }
 }
 
 @Composable
-fun SunriseSunsetRow(weather: Weather){
+fun SunriseSunsetRow(weather: Weather,dayIndex : MutableState<Int>){
     Row(horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
@@ -92,10 +137,10 @@ fun SunriseSunsetRow(weather: Weather){
             Icon(painterResource(id = R.drawable.sunrise ) ,"Sunrise",
             modifier = Modifier.size(30.dp)
             )
-            Text(formatDateTime(weather.list[0].sunrise))
+            Text(formatDateTime(weather.list[dayIndex.value].sunrise))
         }
         Row(){
-            Text(formatDateTime(weather.list[0].sunset))
+            Text(formatDateTime(weather.list[dayIndex.value].sunset))
             Icon(painterResource(id = R.drawable.sunset ) ,"Sunrise",
                 modifier = Modifier.size(30.dp)
             )
@@ -105,7 +150,7 @@ fun SunriseSunsetRow(weather: Weather){
 }
 
 @Composable
-fun ThisWeekLazyColumn(weather : Weather){
+fun ThisWeekLazyColumn(weather : Weather,dayIndex: MutableState<Int>){
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(start = 8.dp, end = 8.dp, bottom = 4.dp, top = 8.dp),
@@ -120,8 +165,10 @@ fun ThisWeekLazyColumn(weather : Weather){
         )
         {
             LazyColumn{
-                items(weather.list){ day ->
-                    ThisWeekRow(day = day )
+                itemsIndexed(weather.list){ index,day ->
+                    ThisWeekRow(day = day,index ){
+                        dayIndex.value = index
+                    }
                 }
             }
         }

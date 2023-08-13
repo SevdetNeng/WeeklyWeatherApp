@@ -1,6 +1,7 @@
 package com.sevdetneng.weeklyweatherapp.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -17,11 +18,14 @@ import com.sevdetneng.weeklyweatherapp.util.formatDate
 import com.sevdetneng.weeklyweatherapp.util.formatDecimals
 
 @Composable
-fun ThisWeekRow(day : WeatherDay){
+fun ThisWeekRow(day : WeatherDay,index : Int,onDayClick : (Int) -> Unit){
     Card(modifier = Modifier
         .fillMaxWidth()
         .height(75.dp)
-        .padding(start = 4.dp, end = 4.dp, top = 4.dp),
+        .padding(start = 4.dp, end = 4.dp, top = 4.dp)
+        .clickable {
+                   onDayClick(index)
+        },
     shape = RoundedCornerShape(bottomStart = 32.dp, topStart = 32.dp, topEnd = 4.dp, bottomEnd = 32.dp),
         backgroundColor = Color.White
     ){

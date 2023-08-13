@@ -16,6 +16,9 @@ class MainViewModel @Inject constructor(private val repository: WeatherApiReposi
     val data : MutableState<DataOrException<Weather,Boolean,Exception>>
     = mutableStateOf(DataOrException(null,true,null))
 
+    val dayIndex = mutableStateOf(0)
+    val unitType = mutableStateOf("metric")
+
     init {
         getWeather("Istanbul","Metric")
     }

@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sevdetneng.weeklyweatherapp.screens.mainscreen.MainScreen
+import com.sevdetneng.weeklyweatherapp.screens.searchscreen.SearchScreen
 import com.sevdetneng.weeklyweatherapp.screens.splashscreen.SplashScreen
 
 @Composable
@@ -18,6 +19,9 @@ fun Navigation() {
             navBackStack.arguments?.getString("city").let { city->
                 MainScreen(navController = navController,city = city!!)
             }
+        }
+        composable(Screens.SearchScreen.name){
+            SearchScreen(navController = navController)
         }
 
     }
