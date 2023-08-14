@@ -1,7 +1,6 @@
 package com.sevdetneng.weeklyweatherapp.screens.splashscreen
 
 import android.view.animation.OvershootInterpolator
-import androidx.compose.animation.Animatable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,7 +45,11 @@ fun SplashScreen(navController: NavController){
             )
         )
         delay(2000)
-        navController.navigate(Screens.MainScreen.name+"/new york")
+        navController.navigate(Screens.MainScreen.name+"/new york"){
+            popUpTo(Screens.SplashScreen.name){
+                inclusive = true
+            }
+        }
     } )
 
     Surface(shape = CircleShape,

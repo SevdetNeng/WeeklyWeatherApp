@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.sevdetneng.weeklyweatherapp.screens.favoritescreen.FavoriteScreen
 import com.sevdetneng.weeklyweatherapp.screens.mainscreen.MainScreen
 import com.sevdetneng.weeklyweatherapp.screens.searchscreen.SearchScreen
 import com.sevdetneng.weeklyweatherapp.screens.splashscreen.SplashScreen
@@ -22,6 +23,9 @@ fun Navigation() {
         }
         composable(Screens.SearchScreen.name){
             SearchScreen(navController = navController)
+        }
+        composable(Screens.FavoriteScreen.name){
+            FavoriteScreen(navController = navController)
         }
 
     }

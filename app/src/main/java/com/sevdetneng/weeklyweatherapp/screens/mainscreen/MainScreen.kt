@@ -5,13 +5,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,13 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+
 import coil.compose.rememberImagePainter
 import com.sevdetneng.weeklyweatherapp.R
 import com.sevdetneng.weeklyweatherapp.components.ThisWeekRow
 import com.sevdetneng.weeklyweatherapp.components.WeatherTopBar
+import com.sevdetneng.weeklyweatherapp.model.Favorite
 import com.sevdetneng.weeklyweatherapp.model.Weather
-import com.sevdetneng.weeklyweatherapp.model.WeatherDay
+
 import com.sevdetneng.weeklyweatherapp.util.formatDate
 import com.sevdetneng.weeklyweatherapp.util.formatDateTime
 import com.sevdetneng.weeklyweatherapp.util.formatDecimals
@@ -40,11 +40,17 @@ fun MainScreen(navController: NavController,city : String){
     mainViewModel.getWeather(city,unitType.value)
     val weatherData = mainViewModel.data.value.data
     val dayIndex = mainViewModel.dayIndex
+    val favorites = mainViewModel._favorites
+
 
 
     if(weatherData!=null){
+        val isFavorite = remember{mutableStateOf(false)}
+        isFavorite.value = favorites.value.contains(Favorite(weatherData.city.name,weatherData.city.country))
         Scaffold(topBar = { WeatherTopBar(title = weatherData.city.name, country = weatherData.city.country,
-            isMain = true, navController = navController) }) {
+            isMain = true, navController = navController,
+            favorites = favorites.value
+        ) }) {
             Column(modifier = Modifier.fillMaxSize()){
                 TodayInfo(weather = weatherData,dayIndex,unitType)
                 Divider(modifier = Modifier.padding(horizontal = 12.dp))
@@ -53,7 +59,8 @@ fun MainScreen(navController: NavController,city : String){
         }
     }else{
         Scaffold(topBar = { WeatherTopBar(title = "City", country = "Country",
-            isMain = false, navController = navController){
+            isMain = false, navController = navController
+        ){
             navController.popBackStack()
         } }) {
             Column(modifier = Modifier.fillMaxSize()){

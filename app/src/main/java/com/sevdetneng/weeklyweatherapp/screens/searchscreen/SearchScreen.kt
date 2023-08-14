@@ -5,19 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
+
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sevdetneng.weeklyweatherapp.components.CommonTextField
@@ -45,7 +43,11 @@ fun SearchScreen(navController: NavController){
                     label = "City",
                     onAction = KeyboardActions{
                         if(valid.value){
-                            navController.navigate(Screens.MainScreen.name+"/${cityName.value}")
+                            navController.navigate(Screens.MainScreen.name+"/${cityName.value}"){
+                                popUpTo(Screens.SearchScreen.name){
+                                    inclusive = true
+                                }
+                            }
                             cityName.value = ""
                             keyboard?.hide()
                         }else{
