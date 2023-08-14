@@ -2,15 +2,13 @@ package com.sevdetneng.weeklyweatherapp.components
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -30,6 +28,11 @@ fun WeatherTopBar(title : String,
     val favViewModel : FavoriteViewModel = hiltViewModel()
     val isFavorite = favorites.contains(Favorite(title,country))
     val isFavoriteState = rememberSaveable{ mutableStateOf(isFavorite) }
+    isFavoriteState.value = isFavorite
+    val isExpanded = remember{ mutableStateOf(false) }
+    if(isExpanded.value){
+        WeatherDropdownMenu(navController = navController, expanded = isExpanded)
+    }
     TopAppBar(title = {Text(text = if(country=="") title else "$title, $country")},
         backgroundColor = Color.Transparent,
         elevation = 4.dp,
@@ -66,7 +69,7 @@ fun WeatherTopBar(title : String,
             }) {
                 Icon(imageVector = Icons.Default.Search,"Search")
             }
-            IconButton(onClick = { navController.navigate(Screens.FavoriteScreen.name) }) {
+            IconButton(onClick = { isExpanded.value = !isExpanded.value }) {
                 Icon(imageVector = Icons.Default.MoreVert,"More")
             }
         },
@@ -81,4 +84,28 @@ fun WeatherTopBar(title : String,
         }
 
     )
+}
+
+@Composable
+fun WeatherDropdownMenu(navController: NavController,expanded : MutableState<Boolean>){
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentSize(Alignment.TopEnd)
+        .absolutePadding(top = 45.dp, right = 40.dp)){
+        DropdownMenu(expanded = expanded.value, onDismissRequest = {expanded.value = false},
+            modifier = Modifier.width(140.dp)
+        ) {
+
+            DropdownMenuItem(onClick = {navController.navigate(Screens.AboutScreen.name)}) {
+
+                Icon(imageVector = Icons.Default.Info,"Info")
+                Text("About")
+            }
+            DropdownMenuItem(onClick = { navController.navigate(Screens.FavoriteScreen.name) }) {
+                Icon(imageVector = Icons.Default.FavoriteBorder,"Info")
+                Text("Favorites")
+            }
+        }
+    }
+
 }
