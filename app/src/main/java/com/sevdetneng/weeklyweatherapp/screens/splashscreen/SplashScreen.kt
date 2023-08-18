@@ -28,9 +28,9 @@ import com.sevdetneng.weeklyweatherapp.navigation.Screens
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController){
+fun SplashScreen(navController: NavController) {
 
-    val scale = remember{
+    val scale = remember {
         Animatable(0f)
     }
 
@@ -45,28 +45,34 @@ fun SplashScreen(navController: NavController){
             )
         )
         delay(2000)
-        navController.navigate(Screens.MainScreen.name+"/new york"){
-            popUpTo(Screens.SplashScreen.name){
+        navController.navigate(Screens.MainScreen.name + "/new york") {
+            popUpTo(Screens.SplashScreen.name) {
                 inclusive = true
             }
         }
-    } )
+    })
 
-    Surface(shape = CircleShape,
+    Surface(
+        shape = CircleShape,
         modifier = Modifier
             .size(330.dp)
             .padding(15.dp)
             .scale(scale.value),
         border = BorderStroke(2.dp, Color.LightGray)
 
-    ){
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center){
-            Image(painter = painterResource(id = R.drawable.sun), contentDescription ="Splash Image",
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.sun), contentDescription = "Splash Image",
                 modifier = Modifier.size(100.dp)
             )
-            Text("Weekly Weather",
-            style = MaterialTheme.typography.h5)
+            Text(
+                "Weekly Weather",
+                style = MaterialTheme.typography.h5
+            )
         }
     }
 }

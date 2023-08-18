@@ -18,10 +18,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: WeatherApiRepository,
-                                        private val dbRepository: WeatherDbRepository) : ViewModel() {
-    val data : MutableState<DataOrException<Weather,Boolean,Exception>>
-            = mutableStateOf(DataOrException(null,true,null))
+class MainViewModel @Inject constructor(
+    private val repository: WeatherApiRepository,
+    private val dbRepository: WeatherDbRepository
+) : ViewModel() {
+    val data: MutableState<DataOrException<Weather, Boolean, Exception>> =
+        mutableStateOf(DataOrException(null, true, null))
 
     private val _favorites = MutableStateFlow<List<Favorite>>(emptyList())
     val favorites = _favorites.asStateFlow()
@@ -36,46 +38,50 @@ class MainViewModel @Inject constructor(private val repository: WeatherApiReposi
     }
 
 
-    fun getWeather(city : String,units : String){
+    fun getWeather(city: String, units: String) {
 
         viewModelScope.launch {
-            data.value = repository.getWeather(city,units)
+            data.value = repository.getWeather(city, units)
         }
     }
 
-    fun getFavorites(){
+    fun getFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
-            dbRepository.getAllFavorites().collect{
+            dbRepository.getAllFavorites().collect {
                 _favorites.value = it
             }
         }
     }
-    fun addFavorite(fav : Favorite){
-        viewModelScope.launch{
+
+    fun addFavorite(fav: Favorite) {
+        viewModelScope.launch {
             dbRepository.insertFavorite(fav)
         }
     }
-    fun deleteFavorite(fav : Favorite){
-        viewModelScope.launch{
+
+    fun deleteFavorite(fav: Favorite) {
+        viewModelScope.launch {
             dbRepository.deleteFavorite(fav)
         }
     }
-    fun toggleUnit(){
+
+    fun toggleUnit() {
         viewModelScope.launch {
-            if(unitType.value == "metric"){
+            if (unitType.value == "metric") {
                 unitType.value = "imperial"
-            }else{
+            } else {
                 unitType.value = "metric"
             }
             dbRepository.deleteAllUnits()
             dbRepository.insertUnit(WeatherUnit(unitType.value))
         }
     }
-    fun getDefaultUnit(){
-        viewModelScope.launch{
-            dbRepository.getAllUnits().collect{
-                if(it.isNotEmpty())
-                unitType.value = it[0].unit
+
+    fun getDefaultUnit() {
+        viewModelScope.launch {
+            dbRepository.getAllUnits().collect {
+                if (it.isNotEmpty())
+                    unitType.value = it[0].unit
             }
         }
     }

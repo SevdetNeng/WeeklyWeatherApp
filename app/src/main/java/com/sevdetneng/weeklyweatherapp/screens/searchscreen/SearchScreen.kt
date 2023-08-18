@@ -24,37 +24,43 @@ import com.sevdetneng.weeklyweatherapp.navigation.Screens
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchScreen(navController: NavController){
-    val searchViewModel : SearchViewModel = viewModel()
+fun SearchScreen(navController: NavController) {
+    val searchViewModel: SearchViewModel = viewModel()
     val cityName = searchViewModel.cityState
     val valid = searchViewModel.valid
     val keyboard = LocalSoftwareKeyboardController.current
     valid.value = cityName.value.isNotBlank()
-    Scaffold(topBar = { WeatherTopBar(title = "Search",
-        isMain = false, navController = navController){
-        navController.popBackStack()
-    }}) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+    Scaffold(topBar = {
+        WeatherTopBar(
+            title = "Search",
+            isMain = false, navController = navController
+        ) {
+            navController.popBackStack()
+        }
+    }) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top){
-                CommonTextField(city = cityName,
-                    label = "City",
-                    onAction = KeyboardActions{
-                        if(valid.value){
-                            navController.navigate(Screens.MainScreen.name+"/${cityName.value}"){
-                                popUpTo(Screens.SearchScreen.name){
-                                    inclusive = true
-                                }
+            verticalArrangement = Arrangement.Top
+        ) {
+            CommonTextField(city = cityName,
+                label = "City",
+                onAction = KeyboardActions {
+                    if (valid.value) {
+                        navController.navigate(Screens.MainScreen.name + "/${cityName.value}") {
+                            popUpTo(Screens.SearchScreen.name) {
+                                inclusive = true
                             }
-                            cityName.value = ""
-                            keyboard?.hide()
-                        }else{
-                            return@KeyboardActions
                         }
+                        cityName.value = ""
+                        keyboard?.hide()
+                    } else {
+                        return@KeyboardActions
                     }
-                )
+                }
+            )
         }
     }
 

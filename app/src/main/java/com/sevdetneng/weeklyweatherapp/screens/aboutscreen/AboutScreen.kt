@@ -13,13 +13,17 @@ import androidx.navigation.NavController
 import com.sevdetneng.weeklyweatherapp.components.WeatherTopBar
 
 @Composable
-fun AboutScreen(navController: NavController){
-    Scaffold(topBar = { WeatherTopBar(title = "About", isMain = false, navController = navController ){
-        navController.popBackStack()
-    } }) {
-        Column(modifier = Modifier.fillMaxSize(),
+fun AboutScreen(navController: NavController) {
+    Scaffold(topBar = {
+        WeatherTopBar(title = "About", isMain = false, navController = navController) {
+            navController.popBackStack()
+        }
+    }) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally){
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text("Weekly Weather App", style = MaterialTheme.typography.h5)
             Text("made by @SevdetNeng", style = MaterialTheme.typography.subtitle1)
         }
