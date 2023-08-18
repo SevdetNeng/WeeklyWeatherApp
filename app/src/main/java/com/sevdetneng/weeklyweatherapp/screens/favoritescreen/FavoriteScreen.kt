@@ -26,9 +26,9 @@ fun FavoriteScreen(navController: NavController){
         navController.popBackStack()
     } }) {
         Surface(shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.fillMaxSize()
-            .padding(12.dp),
-        color = Color.LightGray){
+            modifier = Modifier.fillMaxSize()
+                .padding(12.dp),
+            color = Color.LightGray){
             LazyColumn(modifier = Modifier.padding(8.dp)){
                 items(favorites.value){ favorite ->
                     FavoriteRow(favorite = favorite){

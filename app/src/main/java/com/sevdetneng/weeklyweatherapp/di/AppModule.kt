@@ -37,17 +37,22 @@ object AppModule {
         return Room.databaseBuilder(context,
             WeatherDatabase::class.java,
             "weather_db"
-        ).fallbackToDestructiveMigration().build()
+        ).build()
     }
 
     @Singleton
     @Provides
     fun provideDao(weatherDb : WeatherDatabase) : WeatherDao = weatherDb.weatherDao
 
+
+    @Singleton
+    @Provides
     fun provideDbRepository(weatherDao : WeatherDao) : WeatherDbRepository{
         return WeatherDbRepository(weatherDao)
     }
 
+    @Singleton
+    @Provides
     fun provideApiRepository(weatherApi : WeatherApi) : WeatherApiRepository{
         return WeatherApiRepository(weatherApi)
     }

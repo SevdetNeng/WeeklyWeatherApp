@@ -1,34 +1,27 @@
 package com.sevdetneng.weeklyweatherapp.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.sevdetneng.weeklyweatherapp.model.Favorite
 import com.sevdetneng.weeklyweatherapp.navigation.Screens
-import com.sevdetneng.weeklyweatherapp.screens.favoritescreen.FavoriteViewModel
 
 @Composable
 fun WeatherTopBar(title : String,
                   country : String = "",
                   isMain : Boolean,
                   navController: NavController,
-                  favorites : List<Favorite> = emptyList(),
+                  isFavorite : Boolean = false,
+                  onFavoriteAdd : () -> Unit={},
+                  onFavoriteDelete : () -> Unit = {},
                   onBackClick : () -> Unit = {}){
-    val favViewModel : FavoriteViewModel = hiltViewModel()
-    val isFavorite = favorites.contains(Favorite(title,country))
-    val isFavoriteState = rememberSaveable{ mutableStateOf(isFavorite) }
-    isFavoriteState.value = isFavorite
     val isExpanded = remember{ mutableStateOf(false) }
     if(isExpanded.value){
         WeatherDropdownMenu(navController = navController, expanded = isExpanded)
@@ -39,30 +32,17 @@ fun WeatherTopBar(title : String,
         modifier = Modifier.padding(4.dp),
         actions = {
             if(isMain){
-                if(isFavoriteState.value){
-                    IconButton(onClick = {
-                        Log.d("Fav","Exist")
-                        isFavoriteState.value = false
-                        favViewModel.deleteFavorite(Favorite(title,country))
-
-                    }) {
-                        Icon(imageVector = Icons.Default.Favorite,"Favorite Exists",
-                            tint = Color.Red.copy(alpha = 0.4f)
-                        )
+                IconButton(onClick = {
+                    if(isFavorite){
+                        onFavoriteDelete()
+                    }else{
+                        onFavoriteAdd()
                     }
-                }else{
-                    IconButton(onClick = {
-                        Log.d("Fav","Not Exist")
-                        isFavoriteState.value = true
-                        favViewModel.insertFavorite(Favorite(title,country))
-
-                    }) {
-                        Icon(imageVector = Icons.Default.FavoriteBorder,"Favorite Not Exists",
-                            tint = Color.Red.copy(alpha = 0.4f)
-                        )
-                    }
+                }){
+                    Icon(imageVector = if(isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        "Favorite",
+                    tint = Color.Red.copy(alpha = 0.4f))
                 }
-
             }
             IconButton(onClick = {
                 navController.navigate(Screens.SearchScreen.name)
